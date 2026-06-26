@@ -8,18 +8,22 @@ namespace Caculator
     public partial class Form1 : Form
     {
 
-        public double _firstNumber { get; set; }
-        public double _secondNumber { get; set; }
-        public string _operator { get; set; }
-        public double _result { get; set; }
-        public string _input { get; set; }
-        public bool negative { get; set; } = false;
+        private double _firstNumber;
+        private double _secondNumber;
+        private string _operator;
+        private double _result;
+        private string _input;
+        private bool negative = false;
         public Form1()
         {
             InitializeComponent();
             _input = "";
             _result = 0;
             txtInput.Text = _result.ToString();
+        }
+        private void TestGit()
+        {
+
         }
         private string Result(double firstNumber, double secondNumber, string opera)
         {
