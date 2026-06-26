@@ -7,7 +7,6 @@ namespace Caculator
 {
     public partial class Form1 : Form
     {
-
         private double _firstNumber;
         private double _secondNumber;
         private string _operator;
@@ -20,10 +19,6 @@ namespace Caculator
             _input = "";
             _result = 0;
             txtInput.Text = _result.ToString();
-        }
-        private void TestGit()
-        {
-
         }
         private string Result(double firstNumber, double secondNumber, string opera)
         {
@@ -58,7 +53,7 @@ namespace Caculator
                 case "x^2":
                     result = (_firstNumber * _firstNumber).ToString();
                     break;
-                case "Sqrt":
+                default:
                     result = Math.Sqrt(_firstNumber).ToString();
                     break;
             }
