@@ -1,6 +1,6 @@
 ﻿namespace Caculator
 {
-    partial class Form1
+    partial class CaculatorModal
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CaculatorModal));
             panel1 = new Panel();
             btnExit = new Button();
             button4 = new Button();

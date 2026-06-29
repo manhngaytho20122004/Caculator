@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace Caculator
 {
-    public partial class Form1 : Form
+    public partial class CaculatorModal : Form
     {
         private double _firstNumber;
         private double _secondNumber;
@@ -13,7 +13,7 @@ namespace Caculator
         private double _result;
         private string _input;
         private bool negative = false;
-        public Form1()
+        public CaculatorModal()
         {
             InitializeComponent();
             _input = "";
@@ -229,7 +229,7 @@ namespace Caculator
         {
             _firstNumber = 0;
             _secondNumber = 0;
-            _operator = null;
+            _operator = "";
             _input = "";
             txtInput.Text = "0";
             txtHistory.Text = "";
