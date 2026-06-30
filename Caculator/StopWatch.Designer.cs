@@ -37,6 +37,9 @@
             timer = new System.Windows.Forms.Timer(components);
             txtTime = new Label();
             dataTime = new DataGridView();
+            hr = new Label();
+            label2 = new Label();
+            label3 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataTime).BeginInit();
             SuspendLayout();
@@ -56,7 +59,7 @@
             btnOnOff.BackColor = Color.Red;
             btnOnOff.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnOnOff.ForeColor = Color.White;
-            btnOnOff.Location = new Point(12, 482);
+            btnOnOff.Location = new Point(158, 482);
             btnOnOff.Name = "btnOnOff";
             btnOnOff.Size = new Size(147, 47);
             btnOnOff.TabIndex = 1;
@@ -82,7 +85,7 @@
             btnReset.BackColor = SystemColors.Highlight;
             btnReset.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
             btnReset.ForeColor = Color.White;
-            btnReset.Location = new Point(640, 482);
+            btnReset.Location = new Point(529, 482);
             btnReset.Name = "btnReset";
             btnReset.Size = new Size(147, 47);
             btnReset.TabIndex = 3;
@@ -114,9 +117,37 @@
             dataTime.GridColor = Color.White;
             dataTime.Location = new Point(20, 559);
             dataTime.Name = "dataTime";
+            dataTime.RowHeadersVisible = false;
             dataTime.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataTime.Size = new Size(767, 150);
             dataTime.TabIndex = 6;
+            // 
+            // hr
+            // 
+            hr.AutoSize = true;
+            hr.Location = new Point(271, 279);
+            hr.Name = "hr";
+            hr.Size = new Size(18, 15);
+            hr.TabIndex = 7;
+            hr.Text = "hr";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(357, 279);
+            label2.Name = "label2";
+            label2.Size = new Size(28, 15);
+            label2.TabIndex = 8;
+            label2.Text = "min";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(438, 279);
+            label3.Name = "label3";
+            label3.Size = new Size(24, 15);
+            label3.TabIndex = 9;
+            label3.Text = "sec";
             // 
             // StopWatch
             // 
@@ -124,6 +155,9 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.LavenderBlush;
             ClientSize = new Size(799, 755);
+            Controls.Add(label3);
+            Controls.Add(label2);
+            Controls.Add(hr);
             Controls.Add(dataTime);
             Controls.Add(txtTime);
             Controls.Add(btnReset);
@@ -136,6 +170,7 @@
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)dataTime).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -148,6 +183,9 @@
         private ListBox listHistory;
         private Label txtTime;
         private DataGridView dataTime;
+        private Label hr;
+        private Label label2;
+        private Label label3;
         //private ListView listHistory;
     }
 }

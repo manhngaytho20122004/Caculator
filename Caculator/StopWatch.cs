@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
@@ -19,8 +20,9 @@ namespace Caculator
         private int _hour = 0;
         private int _minute = 0;
         private int _second = 0;
-        private int _millisecond = 0;
-
+        private int _centisecond = 0;
+        private TimeSpan _elapsed = TimeSpan.Zero;
+        private DateTime _startTime;
         private List<SaveTime> _listSaveTime;
         public StopWatch()
         {
@@ -36,57 +38,86 @@ namespace Caculator
         }
         private void timer_Tick(object sender, EventArgs e)
         {
-            _millisecond++;
-            if (_millisecond == 100)
+            if (_onStopWatch)
             {
-                _millisecond = 0;
-                _second++;
+                _elapsed = DateTime.Now - _startTime;
+
+                txtTime.Text =
+                    $"{_elapsed.Hours:D2}:" +
+                    $"{_elapsed.Minutes:D2}:" +
+                    $"{_elapsed.Seconds:D2}." +
+                    $"{_elapsed.Milliseconds / 10:D2}";
             }
-            if (_second == 60)
-            {
-                _second = 0;
-                _minute++;
-            }
-            if(_minute == 60)
-            {
-                _minute = 0;
-                _hour++;
-            }
-          
-            txtTime.Text = $"{_hour:D2}:{_minute:D2}:{_second:D2}.{_millisecond:D2}";
-            if( txtTime.Text == "00:00:00:00")
-            {
-                btnSave.Enabled = false;
-                btnReset.Enabled = false;
-            }
+            //_centisecond++;
+            //if (_centisecond == 100)
+            //{
+            //    _centisecond = 0;
+            //    _second++;
+            //}
+            //if (_second == 60)
+            //{
+            //    _second = 0; 
+            //    _minute++;
+            //}
+            //if(_minute == 60) 
+            //{
+            //    _minute = 0;
+            //    _hour++;
+            //}
+
+            //txtTime.Text = $"{_hour:D2}:{_minute:D2}:{_second:D2}.{_centisecond:D2}";
+            //if( txtTime.Text == "00:00:00:00")
+            //{
+            //    btnSave.Enabled = false;
+            //    btnReset.Enabled = false;
+            //}
         }
         private void buttonOnOff_Click(object sender, EventArgs e)
         {
-            if(!_onStopWatch)
+            //if(!_onStopWatch)
+            //{
+            //   _onStopWatch=true;
+            //    btnOnOff.Text = "ON";
+            //    btnOnOff.BackColor = Color.Green;
+            //    btnSave.Enabled = true;
+            //    btnReset.Enabled = true;
+            //    timer.Start();
+            //}  
+            //else
+            //{
+            //    _onStopWatch = false;
+            //    btnOnOff.Text = "OFF";
+            //    btnOnOff.BackColor = Color.Red;
+            //    if(txtTime.Text != "00:00:00.00")
+            //    {
+            //        btnReset.Enabled = true;
+            //    } 
+            //    else 
+            //    { 
+            //        btnReset.Enabled = false; 
+            //    }
+            //    btnSave.Enabled = false;
+            //    timer.Stop();
+            //}
+            if (!_onStopWatch)
             {
-               _onStopWatch=true;
+                _startTime = DateTime.Now - _elapsed;
+
+                _onStopWatch = true;
                 btnOnOff.Text = "ON";
                 btnOnOff.BackColor = Color.Green;
                 btnSave.Enabled = true;
                 btnReset.Enabled = true;
                 timer.Start();
-            }  
-            else
+                timer.Start();
+            }
+            else 
             {
+                _elapsed = DateTime.Now - _startTime;
+
                 _onStopWatch = false;
-                btnOnOff.Text = "OFF";
-                btnOnOff.BackColor = Color.Red;
-                if(txtTime.Text != "00:00:00.00")
-                {
-                    btnReset.Enabled = true;
-                } 
-                else 
-                { 
-                    btnReset.Enabled = false; 
-                }
-                btnSave.Enabled = false;
-                timer.Stop();
-            }    
+            }
+
         }
         private TimeSpan ToTime(string time)
         {
@@ -123,12 +154,8 @@ namespace Caculator
             btnOnOff.BackColor = Color.Red;
             btnSave.Enabled = false;
             btnReset.Enabled = false;
-            _hour = 0;
-            _minute = 0;
-            _second = 0;
-            _millisecond = 0;
-            txtTime.Text = "00:00:00.00";
-            //listHistory.DataSource = null;
+            _elapsed = TimeSpan.Zero;
+            txtTime.Text = "00:00:00:00";
             _listSaveTime.Clear();
             _listSaveTime = new List<SaveTime>();
             dataTime.DataSource = null;
