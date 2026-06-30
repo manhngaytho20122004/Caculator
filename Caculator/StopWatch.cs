@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
+using static System.Windows.Forms.LinkLabel;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
@@ -106,18 +107,31 @@ namespace Caculator
                 _startTime = DateTime.Now - _elapsed;
 
                 _onStopWatch = true;
-                btnOnOff.Text = "ON";
-                btnOnOff.BackColor = Color.Green;
+                btnOnOff.Text = "Stop";
+                btnOnOff.BackColor = Color.Red;
                 btnSave.Enabled = true;
                 btnReset.Enabled = true;
+                btnSaveFile.Enabled = false;
                 timer.Start();
-                timer.Start();
+               
             }
             else
             {
                 _elapsed = DateTime.Now - _startTime;
-
                 _onStopWatch = false;
+                btnOnOff.Text = "Start";
+                btnOnOff.BackColor = Color.Green;
+                btnSaveFile.Enabled = true;
+                if (txtTime.Text != "00:00:00.00")
+                {
+                    btnReset.Enabled = true;
+                }
+                else
+                {
+                    btnReset.Enabled = false;
+                }
+                btnSave.Enabled = false;
+                timer.Stop();
             }
 
         }
@@ -152,8 +166,8 @@ namespace Caculator
         {
             timer.Stop();
             _onStopWatch = false;
-            btnOnOff.Text = "OFF";
-            btnOnOff.BackColor = Color.Red;
+            btnOnOff.Text = "Start";
+            btnOnOff.BackColor = Color.Green;
             btnSave.Enabled = false;
             btnReset.Enabled = false;
             _elapsed = TimeSpan.Zero;
@@ -292,14 +306,38 @@ namespace Caculator
             try
             {
                 string[] lines = File.ReadAllLines(open.FileName);
+                SaveTime time = null;
                 foreach( var items in lines)
                 {
-                    if(items.StartsWith("["))
+                    if (string.IsNullOrWhiteSpace(items))
+                        continue;
+                    if (items.StartsWith("["))
                     {
-                        SaveTime time = new SaveTime();
-
+                       
+                        time = new SaveTime();
+                        _listSaveTime.Add(time);
+                        continue;
+                    }
+                    else
+                    {
+                        string[] data = items.Split('=');
+                        if(data[0] == "Lap")
+                        { 
+                            time.Lap = Convert.ToInt32(data[1]);
+                        }
+                        if (data[0]== "Time")
+                        {
+                            time.Time = data[1];
+                        }
+                        if (data[0] == "Total")
+                        {
+                            time.Total = data[1];
+                        }
+                        
                     }    
-                }    
+                }
+                dataTime.DataSource = null;
+                dataTime.DataSource = _listSaveTime;
             }
             catch (Exception ex)
             {
@@ -332,7 +370,23 @@ namespace Caculator
                 MessageBox.Show("Save file .json fail: " + ex.Message);
             }
         }
-       
+        private void OpenJson(OpenFileDialog open)
+        {
+            _listSaveTime.Clear();
+
+            try
+            {
+                string json = File.ReadAllText(open.FileName);
+
+                _listSaveTime = JsonSerializer.Deserialize<List<SaveTime>>(json);
+                dataTime.DataSource = null;
+                dataTime.DataSource = _listSaveTime;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Open file .json fail: " + ex.Message);
+            }
+        }
         private void button_SaveFile_Click(object sender, EventArgs e)
         {
             string fomatFile = cbFile.Text;
@@ -374,11 +428,11 @@ namespace Caculator
                 }
                 else if (fomatFile == ".ini")
                 {
-                    
+                    OpenIni(open);
                 }
                 else if (fomatFile == ".json")
                 {
-                    
+                    OpenJson(open);
                 }
                 else
                 {

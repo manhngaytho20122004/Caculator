@@ -59,7 +59,7 @@
             // 
             // btnOnOff
             // 
-            btnOnOff.BackColor = Color.LimeGreen;
+            btnOnOff.BackColor = Color.Green;
             btnOnOff.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold);
             btnOnOff.ForeColor = Color.White;
             btnOnOff.Location = new Point(142, 479);
