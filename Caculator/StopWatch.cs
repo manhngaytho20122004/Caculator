@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -6,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
@@ -31,7 +33,7 @@ namespace Caculator
             InitializeComponent();
             btnSave.Enabled = false;
             btnReset.Enabled = false;
-            
+
             timer.Interval = 10;
             timer.Tick += timer_Tick;
 
@@ -111,7 +113,7 @@ namespace Caculator
                 timer.Start();
                 timer.Start();
             }
-            else 
+            else
             {
                 _elapsed = DateTime.Now - _startTime;
 
@@ -121,15 +123,15 @@ namespace Caculator
         }
         private TimeSpan ToTime(string time)
         {
-            return TimeSpan.ParseExact(time,@"hh\:mm\:ss\.ff",null);
+            return TimeSpan.ParseExact(time, @"hh\:mm\:ss\.ff", null);
         }
         private void buttonSaveTime_Click(object sender, EventArgs e)
         {
             SaveTime Time = new SaveTime();
             Time.Lap = _listSaveTime.Count + 1;
             Time.Total = txtTime.Text;
-           
-            if(_listSaveTime.Count == 0)
+
+            if (_listSaveTime.Count == 0)
             {
                 Time.Time = txtTime.Text;
             }
@@ -144,9 +146,9 @@ namespace Caculator
             dataTime.DataSource = _listSaveTime;
             //listHistory.DataSource = null;
             //listHistory.DataSource = _listTime;
-           
-        } 
-        private void buttonReset_Click(object sender,EventArgs e)
+
+        }
+        private void buttonReset_Click(object sender, EventArgs e)
         {
             timer.Stop();
             _onStopWatch = false;
@@ -159,6 +161,232 @@ namespace Caculator
             _listSaveTime.Clear();
             _listSaveTime = new List<SaveTime>();
             dataTime.DataSource = null;
-        }  
+        }
+        private void SaveTxt()
+        {
+            try
+            {
+                SaveFileDialog save = new SaveFileDialog();
+                save.Filter = "Text File (*.txt)|*.txt";
+                save.Title = "Save File";
+                save.FileName = "History.txt";
+                if (save.ShowDialog() == DialogResult.OK)
+                {
+                    List<string> lineItems = new List<string>();
+                    foreach (var item in _listSaveTime)
+                    {
+                        lineItems.Add($"{item.Lap} {item.Time} {item.Total}");
+                    }
+                    File.WriteAllLines("History.txt", lineItems);
+                    MessageBox.Show("Save file .txt success!");
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Save file .txt fail: " + ex.Message);
+            }
+        }
+        private void OpenTxtFile(OpenFileDialog open)
+        {
+            _listSaveTime.Clear();
+            try
+            {
+                string[] lines = File.ReadAllLines(open.FileName);
+                foreach (var items in lines)
+                {
+                    string[] data = items.Split(' ');
+                    SaveTime Time = new SaveTime();
+                    Time.Lap = int.Parse(data[0]);
+                    Time.Time = data[1];
+                    Time.Total = data[2];
+                    _listSaveTime.Add(Time);
+                }
+                dataTime.DataSource = null;
+                dataTime.DataSource = _listSaveTime;
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Open file .txt fail: " + ex.Message);
+            }
+        }            
+        private void SaveCsv()
+        {
+            try
+            {
+                SaveFileDialog save = new SaveFileDialog();
+                save.Filter = "Text File (*.csv)|*.csv";
+                save.Title = "Save File";
+                save.FileName = "History.csv";
+                if (save.ShowDialog() == DialogResult.OK)
+                {
+                    List<string> lineItems = new List<string>();
+                    foreach (var item in _listSaveTime)
+                    {
+                        lineItems.Add($"{item.Lap},{item.Time},{item.Total}");
+                    }
+                    File.WriteAllLines("History.csv", lineItems);
+                    MessageBox.Show("Save file .csv success!");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Save file .csv fail: " + ex.Message);
+            }
+        }
+        private void OpenCsvFile(OpenFileDialog open)
+        {
+            _listSaveTime.Clear();
+            try 
+            {
+                string[] lines = File.ReadAllLines(open.FileName);
+                foreach (var items in lines)
+                {
+                    string[] data = items.Split(',');
+                    SaveTime Time = new SaveTime();
+                    Time.Lap = int.Parse(data[0]);
+                    Time.Time = data[1];
+                    Time.Total = data[2];
+                    _listSaveTime.Add(Time);
+                }
+                dataTime.DataSource = null;
+                dataTime.DataSource = _listSaveTime;
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Open file .csv fail: " + ex.Message);
+            }
+    
+        }
+        private void SaveIni()
+        {
+            try
+            {
+                SaveFileDialog save = new SaveFileDialog();
+                save.Filter = "Text File (*.ini)|*.ini";
+                save.Title = "Save File";
+                save.FileName = "History.ini";
+                if (save.ShowDialog() == DialogResult.OK)
+                {
+                    List<string> lineItems = new List<string>();
+                   
+                    foreach (var item in _listSaveTime)
+                    {
+                        lineItems.Add($"[SaveTime{item.Lap}]");
+                        lineItems.Add($"Lap={item.Lap}");
+                        lineItems.Add($"Time={item.Time}");
+                        lineItems.Add($"Total={item.Total}");
+                        lineItems.Add("");
+                    }
+                    File.WriteAllLines(save.FileName, lineItems);
+                    MessageBox.Show("Save file .ini success!");
+                }    
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Save file .ini fail: " + ex.Message); 
+            }
+        }
+        private void OpenIni(OpenFileDialog open)
+        {
+            _listSaveTime.Clear();
+            try
+            {
+                string[] lines = File.ReadAllLines(open.FileName);
+                foreach( var items in lines)
+                {
+                    if(items.StartsWith("["))
+                    {
+                        SaveTime time = new SaveTime();
+
+                    }    
+                }    
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Open file .ini fail: " + ex.Message);
+            }
+        }
+        private void SaveJson()
+        {
+            try
+            {
+                SaveFileDialog save = new SaveFileDialog();
+                save.Filter = "Text File (*.json)|*.json";
+                save.Title = "Save File";
+                save.FileName = "History.json";
+                if (save.ShowDialog() == DialogResult.OK)
+                {
+                    string json = JsonSerializer.Serialize(
+                        _listSaveTime,
+                            new JsonSerializerOptions
+                            {
+                                WriteIndented = true
+                            }
+                    );
+                    File.WriteAllText(save.FileName, json);
+                    MessageBox.Show("Save file .json success!");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Save file .json fail: " + ex.Message);
+            }
+        }
+       
+        private void button_SaveFile_Click(object sender, EventArgs e)
+        {
+            string fomatFile = cbFile.Text;
+            if (fomatFile == ".txt")
+            {
+                SaveTxt();
+            }
+            if (fomatFile == ".csv")
+            {
+                SaveCsv();
+            }
+            if (fomatFile == ".ini")
+            {
+                SaveIni();
+            }
+            if (fomatFile == ".json")
+            {
+                SaveJson();
+            }
+            if(string.IsNullOrEmpty(fomatFile))
+            {
+                MessageBox.Show("Pleas select fomat file!");
+            }
+        }
+        private void button_OpenFile_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog open = new OpenFileDialog();
+            if(open.ShowDialog() == DialogResult.OK)
+            {
+                string fomatFile = Path.GetExtension(open.FileName);
+                MessageBox.Show(fomatFile);
+                if (fomatFile == ".txt")
+                {
+                    OpenTxtFile(open);
+                }
+                else if (fomatFile == ".csv")
+                {
+                    OpenCsvFile(open);
+                }
+                else if (fomatFile == ".ini")
+                {
+                    
+                }
+                else if (fomatFile == ".json")
+                {
+                    
+                }
+                else
+                {
+                    MessageBox.Show("Only supports opening .txt, .csv, .ini, and .json!");
+                }
+            }    
+            
+        }
+     
     }
 }
