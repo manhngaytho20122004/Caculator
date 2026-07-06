@@ -1,4 +1,6 @@
-﻿using System;
+﻿using IniParser;
+using IniParser.Model;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -27,6 +30,7 @@ namespace Caculator
         private TimeSpan _elapsed = TimeSpan.Zero;
         private DateTime _startTime;
         private List<SaveTime> _listSaveTime;
+        
         public StopWatch()
         {
             _onStopWatch = false;
@@ -36,12 +40,13 @@ namespace Caculator
             btnReset.Enabled = false;
 
             timer.Interval = 10;
-            timer.Tick += timer_Tick;
+            timer.Tick += timer_Tick; 
 
         }
         private void timer_Tick(object sender, EventArgs e)
         {
-            if (_onStopWatch)
+                 
+            if (_onStopWatch)   
             {
                 _elapsed = DateTime.Now - _startTime;
 
@@ -51,59 +56,13 @@ namespace Caculator
                     $"{_elapsed.Seconds:D2}." +
                     $"{_elapsed.Milliseconds / 10:D2}";
             }
-            //_centisecond++;
-            //if (_centisecond == 100)
-            //{
-            //    _centisecond = 0;
-            //    _second++;
-            //}
-            //if (_second == 60)
-            //{
-            //    _second = 0; 
-            //    _minute++;
-            //}
-            //if(_minute == 60) 
-            //{
-            //    _minute = 0;
-            //    _hour++;
-            //}
-
-            //txtTime.Text = $"{_hour:D2}:{_minute:D2}:{_second:D2}.{_centisecond:D2}";
-            //if( txtTime.Text == "00:00:00:00")
-            //{
-            //    btnSave.Enabled = false;
-            //    btnReset.Enabled = false;
-            //}
+            
         }
         private void buttonOnOff_Click(object sender, EventArgs e)
         {
-            //if(!_onStopWatch)
-            //{
-            //   _onStopWatch=true;
-            //    btnOnOff.Text = "ON";
-            //    btnOnOff.BackColor = Color.Green;
-            //    btnSave.Enabled = true;
-            //    btnReset.Enabled = true;
-            //    timer.Start();
-            //}  
-            //else
-            //{
-            //    _onStopWatch = false;
-            //    btnOnOff.Text = "OFF";
-            //    btnOnOff.BackColor = Color.Red;
-            //    if(txtTime.Text != "00:00:00.00")
-            //    {
-            //        btnReset.Enabled = true;
-            //    } 
-            //    else 
-            //    { 
-            //        btnReset.Enabled = false; 
-            //    }
-            //    btnSave.Enabled = false;
-            //    timer.Stop();
-            //}
+            
             if (!_onStopWatch)
-            {
+            { 
                 _startTime = DateTime.Now - _elapsed;
 
                 _onStopWatch = true;
@@ -191,7 +150,7 @@ namespace Caculator
                     {
                         lineItems.Add($"{item.Lap} {item.Time} {item.Total}");
                     }
-                    File.WriteAllLines("History.txt", lineItems);
+                    File.WriteAllLines(save.FileName, lineItems);
                     MessageBox.Show("Save file .txt success!");
                 }
             }
@@ -234,11 +193,12 @@ namespace Caculator
                 if (save.ShowDialog() == DialogResult.OK)
                 {
                     List<string> lineItems = new List<string>();
+                    lineItems.Add("Lap,Time,Total");
                     foreach (var item in _listSaveTime)
                     {
                         lineItems.Add($"{item.Lap},{item.Time},{item.Total}");
                     }
-                    File.WriteAllLines("History.csv", lineItems);
+                    File.WriteAllLines(save.FileName, lineItems);
                     MessageBox.Show("Save file .csv success!");
                 }
             }
@@ -255,6 +215,10 @@ namespace Caculator
                 string[] lines = File.ReadAllLines(open.FileName);
                 foreach (var items in lines)
                 {
+                    if(items.StartsWith("L"))
+                    {
+                        continue;
+                    }    
                     string[] data = items.Split(',');
                     SaveTime Time = new SaveTime();
                     Time.Lap = int.Parse(data[0]);
@@ -271,6 +235,9 @@ namespace Caculator
             }
     
         }
+
+      
+
         private void SaveIni()
         {
             try
@@ -279,62 +246,48 @@ namespace Caculator
                 save.Filter = "Text File (*.ini)|*.ini";
                 save.Title = "Save File";
                 save.FileName = "History.ini";
-                if (save.ShowDialog() == DialogResult.OK)
+                if( save.ShowDialog() == DialogResult.OK )
                 {
-                    List<string> lineItems = new List<string>();
-                   
+                    var parser = new FileIniDataParser();
+                    IniData data = new IniData();
                     foreach (var item in _listSaveTime)
                     {
-                        lineItems.Add($"[SaveTime{item.Lap}]");
-                        lineItems.Add($"Lap={item.Lap}");
-                        lineItems.Add($"Time={item.Time}");
-                        lineItems.Add($"Total={item.Total}");
-                        lineItems.Add("");
+                        data[$"Section{item.Lap}"]["Lap"] = item.Lap.ToString();
+                        data[$"Section{item.Lap}"]["Time"] = item.Time;
+                        data[$"Section{item.Lap}"]["Total"] = item.Total;  
                     }
-                    File.WriteAllLines(save.FileName, lineItems);
-                    MessageBox.Show("Save file .ini success!");
-                }    
+                    string filePath = save.FileName;
+                    parser.WriteFile(filePath, data);
+                    MessageBox.Show("Save file .ini success!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                MessageBox.Show("Save file .ini fail: " + ex.Message); 
+                MessageBox.Show("Save file .ini fail: " + ex.Message);
             }
         }
+
         private void OpenIni(OpenFileDialog open)
         {
-            _listSaveTime.Clear();
             try
             {
-                string[] lines = File.ReadAllLines(open.FileName);
+                string filePath = open.FileName;
+                var parser = new FileIniDataParser();
+                IniData data = parser.ReadFile(filePath);
                 SaveTime time = null;
-                foreach( var items in lines)
+                _listSaveTime.Clear();
+                foreach (SectionData section in data.Sections)
                 {
-                    if (string.IsNullOrWhiteSpace(items))
-                        continue;
-                    if (items.StartsWith("["))
+                    foreach (KeyData key in section.Keys)
                     {
-                       
                         time = new SaveTime();
+                        time.Lap = int.Parse(section.Keys["Lap"]);
+                        time.Time = section.Keys["Time"];
+                        time.Total = section.Keys["Total"];
+
                         _listSaveTime.Add(time);
-                        continue;
                     }
-                    else
-                    {
-                        string[] data = items.Split('=');
-                        if(data[0] == "Lap")
-                        { 
-                            time.Lap = Convert.ToInt32(data[1]);
-                        }
-                        if (data[0]== "Time")
-                        {
-                            time.Time = data[1];
-                        }
-                        if (data[0] == "Total")
-                        {
-                            time.Total = data[1];
-                        }
-                        
-                    }    
+              
                 }
                 dataTime.DataSource = null;
                 dataTime.DataSource = _listSaveTime;
@@ -343,7 +296,81 @@ namespace Caculator
             {
                 MessageBox.Show("Open file .ini fail: " + ex.Message);
             }
+       
         }
+        //private void SaveIni()
+        //{
+        //    try
+        //    {
+        //        SaveFileDialog save = new SaveFileDialog();
+        //        save.Filter = "Text File (*.ini)|*.ini";
+        //        save.Title = "Save File";
+        //        save.FileName = "History.ini";
+        //        if (save.ShowDialog() == DialogResult.OK)
+        //        {
+        //            List<string> lineItems = new List<string>();
+                   
+        //            foreach (var item in _listSaveTime)
+        //            {
+        //                lineItems.Add($"[SaveTime{item.Lap}]");
+        //                lineItems.Add($"Lap={item.Lap}");
+        //                lineItems.Add($"Time={item.Time}");
+        //                lineItems.Add($"Total={item.Total}");
+        //                lineItems.Add("");
+        //            }
+        //            File.WriteAllLines(save.FileName, lineItems);
+        //            MessageBox.Show("Save file .ini success!");
+        //        }    
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        MessageBox.Show("Save file .ini fail: " + ex.Message); 
+        //    }
+        //}
+        //private void OpenIni(OpenFileDialog open)
+        //{
+        //    _listSaveTime.Clear();
+        //    try
+        //    {
+        //        string[] lines = File.ReadAllLines(open.FileName);
+        //        SaveTime time = null;
+        //        foreach( var items in lines)
+        //        {
+        //            if (string.IsNullOrWhiteSpace(items))
+        //                continue;
+        //            if (items.StartsWith("["))
+        //            {
+                       
+        //                time = new SaveTime();
+        //                _listSaveTime.Add(time);
+        //                continue;
+        //            }
+        //            else
+        //            {
+        //                string[] data = items.Split('=');
+        //                if(data[0] == "Lap")
+        //                { 
+        //                    time.Lap = Convert.ToInt32(data[1]);
+        //                }
+        //                if (data[0]== "Time")
+        //                {
+        //                    time.Time = data[1];
+        //                }
+        //                if (data[0] == "Total")
+        //                {
+        //                    time.Total = data[1];
+        //                }
+                        
+        //            }    
+        //        }
+        //        dataTime.DataSource = null;
+        //        dataTime.DataSource = _listSaveTime;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("Open file .ini fail: " + ex.Message);
+        //    }
+        //}
         private void SaveJson()
         {
             try

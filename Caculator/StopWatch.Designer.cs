@@ -43,6 +43,7 @@
             cbFile = new ComboBox();
             bntImport = new Button();
             btnSave = new Button();
+            label1 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataTime).BeginInit();
             SuspendLayout();
@@ -157,7 +158,7 @@
             cbFile.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             cbFile.FormattingEnabled = true;
             cbFile.Items.AddRange(new object[] { ".txt", ".csv", ".ini", ".json" });
-            cbFile.Location = new Point(577, 539);
+            cbFile.Location = new Point(656, 539);
             cbFile.Name = "cbFile";
             cbFile.Size = new Size(131, 33);
             cbFile.TabIndex = 10;
@@ -188,12 +189,23 @@
             btnSave.UseVisualStyleBackColor = false;
             btnSave.Click += buttonSaveTime_Click;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.Location = new Point(577, 547);
+            label1.Name = "label1";
+            label1.Size = new Size(64, 25);
+            label1.TabIndex = 13;
+            label1.Text = "Select";
+            // 
             // StopWatch
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.LavenderBlush;
             ClientSize = new Size(799, 755);
+            Controls.Add(label1);
             Controls.Add(btnSave);
             Controls.Add(bntImport);
             Controls.Add(cbFile);
@@ -231,6 +243,7 @@
         private ComboBox cbFile;
         private Button bntImport;
         private Button btnSave;
+        private Label label1;
         //private ListView listHistory;
     }
 }

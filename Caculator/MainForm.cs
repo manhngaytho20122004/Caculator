@@ -21,7 +21,7 @@ namespace Caculator
         {
             CaculatorModal ViewCaculatorModal = new CaculatorModal();
             ViewCaculatorModal.ShowDialog();
-           
+
         }
 
         private void btnCaculatorModelLess_Click(object sender, EventArgs e)
@@ -31,8 +31,14 @@ namespace Caculator
         }
         private void btnStopWatch_Click(object sender, EventArgs e)
         {
-           StopWatch ViewStopWatch = new StopWatch();
-           ViewStopWatch.ShowDialog();
+            StopWatch ViewStopWatch = new StopWatch();
+            ViewStopWatch.ShowDialog();
+        }
+
+        private void lbThread_Click(object sender, EventArgs e)
+        {
+            ThreadForm ViewCaculatorModal = new ThreadForm();
+            ViewCaculatorModal.Show();
         }
     }
 }

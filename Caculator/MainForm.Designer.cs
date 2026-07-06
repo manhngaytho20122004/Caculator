@@ -32,6 +32,7 @@
             label1 = new Label();
             label2 = new Label();
             label3 = new Label();
+            lbThread = new Label();
             SuspendLayout();
             // 
             // label1
@@ -76,11 +77,26 @@
             label3.TextAlign = ContentAlignment.MiddleCenter;
             label3.Click += btnStopWatch_Click;
             // 
+            // lbThread
+            // 
+            lbThread.BackColor = Color.Orchid;
+            lbThread.Font = new Font("Segoe UI", 20.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lbThread.Image = (Image)resources.GetObject("lbThread.Image");
+            lbThread.ImageAlign = ContentAlignment.MiddleLeft;
+            lbThread.Location = new Point(12, 435);
+            lbThread.Name = "lbThread";
+            lbThread.Size = new Size(430, 111);
+            lbThread.TabIndex = 6;
+            lbThread.Text = "Thread";
+            lbThread.TextAlign = ContentAlignment.MiddleCenter;
+            lbThread.Click += lbThread_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(454, 412);
+            ClientSize = new Size(454, 561);
+            Controls.Add(lbThread);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -94,5 +110,6 @@
         private Label label1;
         private Label label2;
         private Label label3;
+        private Label lbThread;
     }
 }
